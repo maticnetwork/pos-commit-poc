@@ -96,7 +96,7 @@ aggSig is aggregation of n sigs from n privkeys/validators
 
 where `add` is the elliptic curve addition operation over the G1 curve and the empty aggSigs is the G1 point at infinity.
 
-refrences
+References
 
 1. https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf
 2. https://crypto.stanford.edu/~dabo/pubs/papers/BLSmultisig.html
