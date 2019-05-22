@@ -2,11 +2,20 @@
 
 **Warning: This is toy poc and academic review is needed.**
 
+### rogue key attack
+
+proofs-of-possession(POP) at registration to address the rogue public key attack [5](https://eprint.iacr.org/2007/264.pdf)
+
+- we can test POP at validator registration time, have something signed and varify using pubkey.
+
 ## Curve parameters
 
 currently using [py_ecc](https://github.com/ethereum/py_ecc) [py_ecc/fork](https://github.com/0xAshish/py_ecc) for testing/poc purpose
 plan to use rust [code](https://github.com/zkcrypto/pairing) for faser results.
-The BLS12-381 curve parameters are defined [here](https://z.cash/blog/new-snark-curve).
+
+[BN256G2]() is used for solidity G2 point operations and precompiles ECMUL, ECADD and EC
+
+- generate test data/points usign [BLSSmall.py](https://github.com/0xAshish/py_ecc/blob/master/tests/BLSsmall.py)
 
 ### G1 points
 
@@ -22,14 +31,10 @@ Generator for twisted curve over FQ2
 
 ```
 G2 = (
-    FQ2([
-        10857046999023057135944570762232829481370756359578518086990519993285655852781,
-        11559732032986387107991004021392285783925812861821192530917403151452391805634,
-    ]),
-    FQ2([
-        8495653923123431417604973247489272438418190587263600148770280649306958101930,
-        4082367875863433681332203403145435568316851327593401208105741076214120093531,
-    ]),
+    FQ2([11559732032986387107991004021392285783925812861821192530917403151452391805634,
+        10857046999023057135944570762232829481370756359578518086990519993285655852781]),
+    FQ2([4082367875863433681332203403145435568316851327593401208105741076214120093531,
+        8495653923123431417604973247489272438418190587263600148770280649306958101930]))
 )
 ```
 
@@ -49,7 +54,7 @@ public keys are G1 points on the curve.
 - H is Point on G2
 - currently for toy version using straight => `mul(G2, h)`
   to verify/compule `mul(G2, h)` in solidity we are using [BN256G2](https://github.com/musalbas/solidity-BN256G2) thanks mustafa
-  > next use something better for hash to G2 [1](https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf)
+- try-and-increment method can be used for real use case or [hashingToBNCurves](https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf)
 
 ### signing `sig`
 
@@ -102,3 +107,4 @@ References
 2. https://crypto.stanford.edu/~dabo/pubs/papers/BLSmultisig.html
 3. https://crypto.stanford.edu/pbc/thesis.pdf
 4. http://www.craigcostello.com.au/pairings/PairingsForBeginners.pdf
+5. https://eprint.iacr.org/2007/264.pdf
