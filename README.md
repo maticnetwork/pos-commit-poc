@@ -1,22 +1,22 @@
 # BLS signature verification
 
-**Warning: This is toy poc and academic review is needed.**
+**Warning: This is toy POC and an academic review is required.**
 
 ### Rogue key attack
 
 Proofs-of-possession(POP) at registration to address the rogue public key attack [see here](https://eprint.iacr.org/2007/264.pdf)
 
-- This code doesn't check for POP.
-- We can test POP at validator/user registration time, have something signed and verify using pubkey.
+- This code does not check for POP.
+- We can test POP at validator/user registration time. We can get any data signed and verify using pubkey. However, we will add this later.
 
 ## Curve points
 
 - We are currently using [py_ecc](https://github.com/ethereum/py_ecc) [py_ecc/fork](https://github.com/0xAshish/py_ecc) for testing/poc purpose
-- future plan is to use rust [code](https://github.com/zkcrypto/pairing) for faser results.
+- In the future we will use rust [code](https://github.com/zkcrypto/pairing) for faster results
 
-[BN256G2]() is used for solidity G2 point operations and precompiles ECMUL, ECADD and EC
+[BN256G2]() is used for solidity G2 point operations and pre-compiles ECMUL, ECADD and ECPARING
 
-- Test data/points generate using [BLSSmall.py](https://github.com/0xAshish/py_ecc/blob/master/tests/BLSsmall.py)
+- Test data/points generated using [BLSSmall.py](https://github.com/0xAshish/py_ecc/blob/master/tests/BLSsmall.py)
 
 ### G1 points
 
@@ -50,17 +50,15 @@ Public keys are G1 points on the curve.
 
 ### `hashToG2`
 
-- Message m = some crap data
-- h = Hash of Message m or some numeric deterministic repsrentaion
+- Message m = data to be signed
+- h = Hash of Message m or some numeric deterministic representation
 - H is Point on G2
-- Currently for toy version using => `mul(G2, h)`
-  for `hashToG2`.
-- Some better methods for `hashToG1/G2` [`try-and-increment`, [hashingToBNCurves](https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf)]
-  can be used for real use cases.
+- Currently, for toy version we are using `hashToG2` => `mul(G2, h)`
+- Some better methods for `hashToG1/G2` [`try-and-increment`, [hashingToBNCurves](https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf)] can be used for real use cases.
 
 ### BLS signing `sig`
 
-- Sig is a valid G2 point
+- sig is a valid G2 point
 - `sig = mul(H, sk)`
 
 ## Aggregation operations

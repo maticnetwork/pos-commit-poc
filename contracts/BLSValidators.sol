@@ -69,17 +69,18 @@ contract BLSValidators {
             // }
         }
 
-        G2Point memory H = hashToG2(12312312345);
+        G2Point memory H = hashToG2(message);
         G2Point memory signature = G2Point([sigs1,sigs0],[sigs3,sigs2]);
         return pairing2(P1(), H, negate(pubkey), signature);
     }
 
 
     function testCheckSigAGG() public {
+
         G1Point memory pubkey = G1Point(
         17380323886581056473092238415087178747833394266216426706118377188344506669132,
         8264330258127714892906603723635360533223500611780692134587255146148491007336);
-
+        // hash on G2 point
         G2Point memory H = G2Point(
         [7806540115951598708068323537226325143489341620121102987168061034219723055482,
         16102053849180588443131133900438094849149715436625045469236991987039241848240],
