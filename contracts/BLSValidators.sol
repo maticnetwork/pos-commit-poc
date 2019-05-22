@@ -11,7 +11,7 @@ Code is based on https://github.com/jstoxrocky/zksnarks_example
 
 */
 
-contract BLSExample {
+contract BLSValidators {
 
     struct G1Point {
         uint X;
@@ -33,9 +33,18 @@ contract BLSExample {
     uint256 public vCount = 0;
     mapping (uint256 => Validator) public validators;
 
-    function addValidator(uint256 amount, uint256 _pk,uint256 n) public {
-        for(uint256 i=0;i<n;i++){
+    event newValidator(uint256 indexed validatorId);
+
+    function addValidator(uint256 pkX, uint256 pkY, uint256 amount) public {
          vCount++;
+         validators[vCount] = Validator(msg.sender, amount, G1Point(pkX, pkY));
+         emit newValidator(vCount);
+    }
+
+    function addValidatorTest(uint256 amount, uint256 _pk,uint256 n) public {
+        for(uint256 i = 0 ;i < n; i++) {
+         vCount++;
+         // Temporary
          G1Point memory pk = mul(P1(), _pk+i);
          validators[vCount] = Validator(msg.sender,amount, pk);
         }
@@ -53,7 +62,7 @@ contract BLSExample {
 
     function checkSigAGG(uint256 bitmask, uint256 sigs0, uint256 sigs1, uint256 sigs2, uint256 sigs3, uint256 message) public returns(bool) {
         G1Point memory pubkey;
-        for(uint256 i = 0; i <vCount; i++) {
+        for(uint256 i = 0; i < vCount; i++) {
             // if((bitmask >> i) & 1 > 0) {
                 Validator v = validators[i+1];
                 pubkey = add(pubkey, v.pubkey);
@@ -66,8 +75,10 @@ contract BLSExample {
     }
 
 
-    function checkSigAGG1() public returns(bool) {
-        G1Point memory pubkey = G1Point(17380323886581056473092238415087178747833394266216426706118377188344506669132, 8264330258127714892906603723635360533223500611780692134587255146148491007336);
+    function testCheckSigAGG() public {
+        G1Point memory pubkey = G1Point(
+        17380323886581056473092238415087178747833394266216426706118377188344506669132,
+        8264330258127714892906603723635360533223500611780692134587255146148491007336);
 
         G2Point memory H = G2Point(
         [7806540115951598708068323537226325143489341620121102987168061034219723055482,
@@ -81,7 +92,7 @@ contract BLSExample {
         [1985362097212581787757922254110217851026070065076532109495179805548055991837,
          7135647869386222135872517926452623520408611489591663660104271578165118400268]);
 
-        return pairing2(P1(), H, negate(pubkey), signature);
+        require(pairing2(P1(), H, negate(pubkey), signature), "Something went wrong");
     }
 
     /// @return the generator of G1
