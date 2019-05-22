@@ -54,7 +54,7 @@ Public keys are G1 points on the curve.
 - h = Hash of Message m or some numeric deterministic representation
 - H is Point on G2
 - Currently, for toy version we are using `hashToG2` => `mul(G2, h)`
-- Some better methods for `hashToG1/G2` [`try-and-increment`, [hashingToBNCurves](https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf)] can be used for real use cases.
+- Some better methods for `hashToG1/G2` [`try-and-increment`, [hashingToBNCurves](https://www.di.ens.fr/~fouque/pub/latincrypt12.pdf), [Fast_hashing_to_G2](https://eprint.iacr.org/2008/530.pdf)] can be used for real use cases.
 
 ### BLS signing `sig`
 
@@ -127,3 +127,4 @@ Above algorithm from [ETH2.0](https://github.com/ethereum/eth2.0-specs/blob/dev/
 3. https://crypto.stanford.edu/pbc/thesis.pdf
 4. http://www.craigcostello.com.au/pairings/PairingsForBeginners.pdf
 5. https://eprint.iacr.org/2007/264.pdf
+6. https://eprint.iacr.org/2008/530.pdf
