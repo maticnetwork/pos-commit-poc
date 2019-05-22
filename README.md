@@ -2,6 +2,8 @@
 
 **Warning: This is toy POC and an academic review is required.**
 
+Validate multiple signatures on Ethereum chain using BLS.
+
 ### Rogue key attack
 
 Proofs-of-possession(POP) at registration to address the rogue public key attack [see here](https://eprint.iacr.org/2007/264.pdf)
