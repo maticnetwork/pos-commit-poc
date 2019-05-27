@@ -34,7 +34,7 @@ library BN256G2 {
         uint256 pt1yx, uint256 pt1yy,
         uint256 pt2xx, uint256 pt2xy,
         uint256 pt2yx, uint256 pt2yy
-    ) public pure returns (
+    ) public view returns (
         uint256, uint256,
         uint256, uint256
     ) {
@@ -107,7 +107,7 @@ library BN256G2 {
         uint256 s,
         uint256 pt1xx, uint256 pt1xy,
         uint256 pt1yx, uint256 pt1yy
-    ) public pure returns (
+    ) public view returns (
         uint256, uint256,
         uint256, uint256
     ) {
@@ -195,13 +195,13 @@ library BN256G2 {
     function _FQ2Div(
         uint256 xx, uint256 xy,
         uint256 yx, uint256 yy
-    ) internal pure returns(uint256, uint256) {
+    ) internal view returns(uint256, uint256) {
         (yx, yy) = _FQ2Inv(yx, yy);
         return _FQ2Mul(xx, xy, yx, yy);
     }
 
-    function _FQ2Inv(uint256 x, uint256 y) internal pure returns(uint256, uint256) {
-        uint256 inv = _modInv(addmod(mulmod(y, y, FIELD_MODULUS), mulmod(x, x, FIELD_MODULUS), FIELD_MODULUS), FIELD_MODULUS);
+    function _FQ2Inv(uint256 x, uint256 y) internal view returns(uint256, uint256) {
+        uint256 inv = _modInvPrecompile(addmod(mulmod(y, y, FIELD_MODULUS), mulmod(x, x, FIELD_MODULUS), FIELD_MODULUS), FIELD_MODULUS);
         return (
             mulmod(x, inv, FIELD_MODULUS),
             FIELD_MODULUS - mulmod(y, inv, FIELD_MODULUS)
@@ -224,24 +224,33 @@ library BN256G2 {
         return yyx == 0 && yyy == 0;
     }
 
-    function _modInv(uint256 a, uint256 n) internal pure returns(uint256 t) {
-        t = 0;
-        uint256 newT = 1;
-        uint256 r = n;
-        uint256 newR = a;
-        uint256 q;
-        while (newR != 0) {
-            q = r / newR;
-            (t, newT) = (newT, submod(t, mulmod(q, newT, n), n));
-            (r, newR) = (newR, r - q * newR);
+    /**
+     * This is about half as expensive has `_modInv` where `a` has with a high hamming weight
+     *  result = pow(a, n-2, n)
+     */
+    function _modInvPrecompile(uint256 a, uint256 n)
+        public view returns (uint256 result)
+    {
+        bool success;
+        assembly {
+            let freemem := mload(0x40)
+            mstore(freemem, 0x20)
+            mstore(add(freemem,0x20), 0x20)
+            mstore(add(freemem,0x40), 0x20)
+            mstore(add(freemem,0x60), a)
+            mstore(add(freemem,0x80), sub(n, 2))
+            mstore(add(freemem,0xA0), n)
+            success := staticcall(sub(gas, 2000), 5, freemem, 0xC0, freemem, 0x20)
+            result := mload(freemem)
         }
+        require(success);
     }
 
     function _fromJacobian(
         uint256 pt1xx, uint256 pt1xy,
         uint256 pt1yx, uint256 pt1yy,
         uint256 pt1zx, uint256 pt1zy
-    ) internal pure returns (
+    ) internal view returns (
         uint256 pt2xx, uint256 pt2xy,
         uint256 pt2yx, uint256 pt2yy
     ) {
