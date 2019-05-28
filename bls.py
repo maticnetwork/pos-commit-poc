@@ -55,6 +55,14 @@ zpad = lambda x, l: b'\x00' * max(0, l - len(x)) + x
 
 tobe256 = lambda v: zpad(int_to_big_endian(v), 32)
 
+def g2_to_list(point):
+    return [_.n for _ in point[0].coeffs + point[1].coeffs]
+
+def g1_to_list(point):
+	return [_.n for _ in point]
+
+fmt_list = lambda point: '[' + ', '.join([('"' + hex(_) + '"') for _ in point]) + ']'
+
 def randn():
 	return int.from_bytes(urandom(64), 'big') % curve_order
 
@@ -75,7 +83,7 @@ def isoncurve_g1(x, y):
 def hash_to_g1(x):
 	# XXX: todo, re-hash on every round
 	assert isinstance(x, int)
-	x = x % curve_order
+	x = x % field_modulus
 	while True:
 		beta, y = evalcurve_g1(x)
 		if beta == mulmodp(y, y):
@@ -108,10 +116,10 @@ def bls_sign(sk, msg):
 
 def bls_verify(pk, msg, sig) -> bool:
 	H_m = hash_to_g1(msg)
-	return pairing(pk, H_m) == pairing(G2, sig)
+	return pairing(pk, H_m) * pairing(neg(G2), sig) == FQ12.one()
 
 def bls_agg_verify(pks, msg, sigs) -> bool:
 	H_m = hash_to_g1(msg)
 	agg_pk = reduce(add, pks)
 	agg_sig = reduce(add, sigs)
-	return pairing(agg_pk, H_m) == pairing(G2, agg_sig)
+	return pairing(agg_pk, H_m) * pairing(neg(G2), agg_sig) == FQ12.one()
