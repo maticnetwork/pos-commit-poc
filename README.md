@@ -129,3 +129,4 @@ Above algorithm from [ETH2.0](https://github.com/ethereum/eth2.0-specs/blob/dev/
 3. https://crypto.stanford.edu/pbc/thesis.pdf
 4. http://www.craigcostello.com.au/pairings/PairingsForBeginners.pdf
 5. https://eprint.iacr.org/2007/264.pdf
+6. https://eprint.iacr.org/2008/530.pdf
